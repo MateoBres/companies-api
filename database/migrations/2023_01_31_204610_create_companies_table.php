@@ -14,14 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('companies', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('businessName');
-            $table->string('address')->nullable();
-            $table->integer('vat');
-            $table->integer('taxCode');
-            $table->string('employees')->nullable();
-            $table->boolean('active')->default(false);
-            $table->enum('type',[1,2,3,4]);
+            $table->id();
+            $table->string('businessName', 256);
+            $table->string('address', 256)->nullable();
+            $table->string('vat');
+            $table->string('taxCode', 256);
+            $table->integer('employees')->nullable();
+            $table->boolean('active')->nullable()->default(false);
+            $table->enum('type', [1, 2, 3, 4]); //corrispondenza 1=>'SRL', 2=>'SPA', 3=>'SNC', 4=>'Freelance'
             $table->timestamps();
         });
     }
