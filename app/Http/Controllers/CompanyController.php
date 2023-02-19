@@ -2,15 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use stdClass;
 use App\Models\Company;
 use Illuminate\Http\Request;
-use stdClass;
+use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
-    //classe con le regole di validazione in base al type per store e update
-    use Traits\Rules;
 
+    public function getRules($request)
+    {        
+        $rules = [
+            'address' => 'string|nullable',
+            'employees' => 'numeric|nullable',
+            'active' => 'boolean|nullable',
+            'businessName' => 'required|string',
+            'vat' => 'required|string|digits:11',
+            'type' => ['required', Rule::in([1, 2, 3, 4])],
+            'taxCode' => (!in_array($request->get('type'),[1,2,3,4]) ? '' : ($request->get('type') == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11'))
+        ];
+
+        return $rules;
+    }
+   
 
     public function index(Request $request)
     {
@@ -35,20 +49,7 @@ class CompanyController extends Controller
 
     public function store(Request $request)
     {
-        //verifico se type == null o fuori range evito l'invio l'errore sulla lunghezza del taxCode valutando la sua lunghezza
-        //type 4 significa che permetto la registrazione con codice fiscale (16 caratteri, lettere e numeri) altrimenti PI (11 caratteri solo numeri)
-        if ((!$request->get('type') || !in_array($request->get('type'),[1,2,3,4])) && $request->get('taxCode') !== null) {
-            if (strlen($request->get('taxCode')) == 16) {
-                $request->validate($this->getRules()['rulesStore1']); //metodo nel trait/Rules
-            } else {
-                $request->validate($this->getRules()['rulesStore2']); //metodo nel trait/Rules
-            }
-        }
-        if ($request->get('type') == 4) {
-            $request->validate($this->getRules()['rulesStore1']); //metodo nel trait/Rules
-        } else {
-            $request->validate($this->getRules()['rulesStore2']); //metodo nel trait/Rules
-        }
+        $request->validate($this->getRules($request));
 
         $company = Company::create($request->all());
 
@@ -60,69 +61,53 @@ class CompanyController extends Controller
 
     public function show($id, Request $request)
     {
-        $company = Company::find($id);
+        $company = Company::findOrFail($id);
 
-        // mostro un errore in caso non esista l'id cercato dall'utente
-        if (!$company) {
-            return response()->json([
-                'errors' => 'Data not found'
-            ], 422);
-        } else {
-            $company->update($request->all());
+        $company->update($request->all());
 
-            return response()->json([                
-                'data' => $company
-            ], 200);
-        }
+        return response()->json([                
+            'data' => $company
+        ], 200);
     }
 
 
     public function update($id, Request $request)
     {
-        // se non ricevo neanche un campo lancio l'errore
-        if (count($request->all()) == 0 || $request->get('businessName') == null && $request->get('address') == null && $request->get('vat') == null && $request->get('taxCode') == null && $request->get('employees') == null && $request->get('active') == null && $request->get('type') == null) {
-            return response()->json([
-                'errors' => 'At lest one filed must be modified'
-            ], 422);
-        };
-
-        $company = Company::find($id);
-
-        // mostro un errore in caso non esista l'id cercato dall'utente
-        if (!$company) {
-            return response()->json([
-                'errors' => 'Data not found'
-            ], 422);
-        } else {
-            //type 4 significa che permetto la registrazione con codice fiscale (16 caratteri, lettere e numeri) altrimenti PI (11 caratteri solo numeri)
-            if ($request->get('type') == 4) {
-                $request->validate($this->getRules()['rulesUpdate1']); //metodo nel trait/Rules
-            } else {
-                $request->validate($this->getRules()['rulesUpdate2']); //metodo nel trait/Rules
-            }
-
-            $company->update($request->all());
-
-            return response()->json([                
-                'data' => $company
-            ], 200);
+        $company = Company::findOrFail($id);
+              
+        // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type salvarto a DB per la validazione
+        if(!$request->get('type') && $request->get('taxCode'))
+            $request->request->add(['type' => $company->type]); 
+        
+        // se viene aggiornato il type e no viene aggiornato in taxCode verifico che il taxCode a DB sia coerente
+        if($request->get('type') && !$request->get('taxCode'))
+            $request->request->add(['taxCode' => $company->taxCode]);         
+        
+        $rules= $this->getRules($request);
+        
+        //filtro le rogole di validazione in base ai campi da aggiornare
+        $arrayRules = [];
+        foreach(array_keys($request->all()) as $key)
+        {
+            $arrayRules[$key] = $rules[$key];
         }
+          
+        $request->validate($arrayRules); 
+
+        $company->update($request->all());
+
+        return response()->json([                
+            'data' => $company
+        ], 200);
     }
 
 
     public function destroy($id)
     {
-        $company = Company::find($id);
+        $company = Company::findOrFail($id);
 
-        // mostro un errore in caso non esista l'id cercato dall'utente
-        if (!$company) {
-            return response()->json([
-                'errors' => 'Data not found'
-            ], 422);
-        } else {
-            $company->delete();
+        $company->delete();
 
-            return response()->noContent();
-        }
+        return response()->noContent();
     }
 }
