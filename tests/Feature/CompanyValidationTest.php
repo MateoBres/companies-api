@@ -218,7 +218,7 @@ class CompanyValidationTest extends TestCase
     public function test_update_vat_string_11_digits()
     {
         $this->patchJson(route('company.update', $this->company->id), [
-            'vat' => 12345678901
+            'vat' => 10123456789
             ])
             ->assertJsonStructure(['errors'])
             ->assertJsonCount(1, ['errors'])
@@ -273,7 +273,7 @@ class CompanyValidationTest extends TestCase
             ->assertStatus(422); // verifica risposta errore validazione   
             
         $this->patchJson(route('company.update', $this->company->id), [
-            'type' => 4
+            'type' => 1
             ])
             ->assertJsonStructure(['data'])
             ->assertOk(); // verifica risposta ok   

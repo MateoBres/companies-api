@@ -79,6 +79,13 @@ class CompanyCrudTest extends TestCase
 
         $this->assertDatabaseHas('companies', ['id' => $this->company->id, 'businessName' => 'updated businessName']);
     }
+    
+    public function test_aggiornamento_dati_company_senza_variazioni_ritorna_errore()
+    {
+        $this->patchJson(route('company.update', $this->company->id), ['businessName' => $this->company->businessName])
+            ->assertJsonStructure(['errors'])
+            ->assertOk(); 
+    }
 
 
     public function test_aggiornamento_dati_company_fallita_per_id_non_trovato()
