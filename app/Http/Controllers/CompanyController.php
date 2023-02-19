@@ -11,7 +11,7 @@ class CompanyController extends Controller
 {
 
     public function getRules($request)
-    {        
+    {
         $rules = [
             'address' => 'string|nullable',
             'employees' => 'numeric|nullable',
@@ -19,12 +19,12 @@ class CompanyController extends Controller
             'businessName' => 'required|string',
             'vat' => 'required|string|digits:11',
             'type' => ['required', Rule::in([1, 2, 3, 4])],
-            'taxCode' => (!in_array($request->get('type'),[1,2,3,4]) ? '' : ($request->get('type') == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11'))
+            'taxCode' => (!in_array($request->get('type'), [1, 2, 3, 4]) ? '' : ($request->get('type') == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11'))
         ];
 
         return $rules;
     }
-   
+
 
     public function index(Request $request)
     {
@@ -40,7 +40,7 @@ class CompanyController extends Controller
         $meta->perPage = $perPage;
         $meta->total = count(Company::all());
 
-        return response()->json([            
+        return response()->json([
             'data' => $result,
             'meta' => $meta
         ], 200);
@@ -53,7 +53,7 @@ class CompanyController extends Controller
 
         $company = Company::create($request->all());
 
-        return response()->json([            
+        return response()->json([
             'data' => $company
         ], 201);
     }
@@ -65,7 +65,7 @@ class CompanyController extends Controller
 
         $company->update($request->all());
 
-        return response()->json([                
+        return response()->json([
             'data' => $company
         ], 200);
     }
@@ -74,29 +74,27 @@ class CompanyController extends Controller
     public function update($id, Request $request)
     {
         $company = Company::findOrFail($id);
-              
+
         // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type salvarto a DB per la validazione
-        if(!$request->get('type') && $request->get('taxCode'))
-            $request->request->add(['type' => $company->type]); 
-        
+        if (!$request->get('type') && $request->get('taxCode'))
+            $request->request->add(['type' => $company->type]);
+
         // se viene aggiornato il type e no viene aggiornato in taxCode verifico che il taxCode a DB sia coerente
-        if($request->get('type') && !$request->get('taxCode'))
-            $request->request->add(['taxCode' => $company->taxCode]);         
-        
-        $rules= $this->getRules($request);
-        
-        //filtro le rogole di validazione in base ai campi da aggiornare
+        if ($request->get('type') && !$request->get('taxCode'))
+            $request->request->add(['taxCode' => $company->taxCode]);
+
+        //prendo tutte le regole di validazione e le filtro in base ai campi dell'update
+        $rules = $this->getRules($request);
         $arrayRules = [];
-        foreach(array_keys($request->all()) as $key)
-        {
+        foreach (array_keys($request->all()) as $key) {
             $arrayRules[$key] = $rules[$key];
         }
-          
-        $request->validate($arrayRules); 
+
+        $request->validate($arrayRules);
 
         $company->update($request->all());
 
-        return response()->json([                
+        return response()->json([
             'data' => $company
         ], 200);
     }

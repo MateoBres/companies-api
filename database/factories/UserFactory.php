@@ -22,11 +22,11 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => '1234567890', // password
-            'remember_token' => Str::random(10),
+            'remember_token' => Str::random(10)
         ];
     }
-   
-   
+
+
     /**
      * Define the model's default state.
      *

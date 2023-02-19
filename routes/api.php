@@ -2,8 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\AuthController;
 
 // autenticazione utenti gestita da Sanctum middleware
 Route::middleware('auth:sanctum')->group(function () {
@@ -17,7 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/company', [CompanyController::class, 'index'])->name('company.index');
 
 // REGISTRAZIONE
-Route::post('/register', RegisterController::class)->name('user.register');
+Route::post('/auth/register', [AuthController::class, 'createUser'])->name('user.register');
 
 // LOGIN
-Route::post('/login', LoginController::class)->name('user.login');
+Route::post('/auth/login', [AuthController::class, 'loginUser'])->name('user.login');
