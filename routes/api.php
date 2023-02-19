@@ -16,7 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/company', [CompanyController::class, 'index'])->name('company.index');
 
 // REGISTRAZIONE
-Route::post('/auth/register', [AuthController::class, 'createUser'])->name('user.register');
+Route::post('/register', [AuthController::class, 'createUser'])->name('user.register');
 
 // LOGIN
-Route::post('/auth/login', [AuthController::class, 'loginUser'])->name('user.login');
+Route::post('/login', [AuthController::class, 'loginUser'])->name('user.login');
