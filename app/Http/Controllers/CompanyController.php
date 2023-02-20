@@ -86,10 +86,12 @@ class CompanyController extends Controller
         // prendo tutte le regole di validazione e le filtro in base ai campi dell'update
         $rules = $this->getRules($request);
         $arrayRules = [];
-        // filtro i campi con non aono stati modificati
+
+        // filtro i campi con non sono stati modificati
         $requestAll = array_filter($request->all(), function ($key) use ($request, $company) {
             return $request->all()[$key] != $company[$key];
         }, ARRAY_FILTER_USE_KEY);
+
         // prendo le regole che mi servono per la validazione
         foreach (array_keys($requestAll) as $key) {
             $arrayRules[$key] = $rules[$key];
