@@ -75,11 +75,11 @@ class CompanyController extends Controller
     {
         $company = Company::findOrFail($id);
 
-        // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type salvarto a DB per la validazione
+        // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type preso a DB per la validazione
         if (!$request->get('type') && $request->get('taxCode'))
             $request->request->add(['type' => $company->type]);
 
-        // se viene aggiornato il type e no viene aggiornato in taxCode verifico che il taxCode a DB sia coerente
+        // se viene aggiornato il type e non viene aggiornato in taxCode verifico che il taxCode a DB sia coerente
         if ($request->get('type') && !$request->get('taxCode'))
             $request->request->add(['taxCode' => $company->taxCode]);
 
