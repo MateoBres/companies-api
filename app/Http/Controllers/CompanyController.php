@@ -74,7 +74,7 @@ class CompanyController extends Controller
     public function update($id, Request $request)
     {
         $company = Company::findOrFail($id);
-        
+
         // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type salvarto a DB per la validazione
         if (!$request->get('type') && $request->get('taxCode'))
             $request->request->add(['type' => $company->type]);
@@ -86,17 +86,19 @@ class CompanyController extends Controller
         // prendo tutte le regole di validazione e le filtro in base ai campi dell'update
         $rules = $this->getRules($request);
         $arrayRules = [];
-        foreach (array_keys($request->all()) as $key) {
-            // verifico che il valore passato sia diverso da quello presente a db
-            if($request->all()[$key] != $company[$key])
-                $arrayRules[$key] = $rules[$key];
+        // filtro i campi con non aono stati modificati
+        $requestAll = array_filter($request->all(), function ($key) use ($request, $company) {
+            return $request->all()[$key] != $company[$key];
+        }, ARRAY_FILTER_USE_KEY);
+        // prendo le regole che mi servono per la validazione
+        foreach (array_keys($requestAll) as $key) {
+            $arrayRules[$key] = $rules[$key];
         }
 
         // se tuttti i valori passati sono identici e quindi non ho nulla da validare lancio un errore
-        if(count($arrayRules) == 0)
-        {
+        if (count($arrayRules) == 0) {
             return response()->json([
-                'errors' => 'At least one field must be changed'
+                'errors' => 'At least one field must be modified'
             ], 200);
         }
         $request->validate($arrayRules);
