@@ -75,34 +75,38 @@ class CompanyController extends Controller
     {
         $company = Company::findOrFail($id);
 
-        // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type preso a DB per la validazione
-        if (!$request->get('type') && $request->get('taxCode'))
-            $request->request->add(['type' => $company->type]);
-
-        // se viene aggiornato il type e non viene aggiornato in taxCode verifico che il taxCode a DB sia coerente
-        if ($request->get('type') && !$request->get('taxCode'))
-            $request->request->add(['taxCode' => $company->taxCode]);
-
-        // prendo tutte le regole di validazione e le filtro in base ai campi dell'update
-        $rules = $this->getRules($request);
-        $arrayRules = [];
-
-        // filtro i campi con non sono stati modificati
+        // filtro i campi che non sono stati modificati
         $requestAll = array_filter($request->all(), function ($key) use ($request, $company) {
             return $request->all()[$key] != $company[$key];
         }, ARRAY_FILTER_USE_KEY);
 
-        // prendo le regole che mi servono per la validazione
-        foreach (array_keys($requestAll) as $key) {
-            $arrayRules[$key] = $rules[$key];
-        }
-
-        // se tuttti i valori passati sono identici e quindi non ho nulla da validare lancio un errore
-        if (count($arrayRules) == 0) {
+        // se tuttti i valori passati sono identici a quelli attuali lancio un errore
+        if (count($requestAll) == 0) {
             return response()->json([
                 'errors' => 'At least one field must be modified'
             ], 200);
         }
+
+        // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type preso a DB per la validazione e viceversa
+        if (isset($requestAll['taxCode']) && !isset($requestAll['type'])){
+            $requestAll['type'] = $company->type;
+            $request->request->add(['type' => $company->type]);
+        }
+
+        if (isset($requestAll['type']) && !isset($requestAll['taxCode'])){
+            $requestAll['taxCode'] = $company->taxCode;
+            $request->request->add(['taxCode' => $company->taxCode]);
+        }
+
+        // creo un array con le regole di validazione che mi servono in base ai campi dell'update
+        $rules = $this->getRules($request);
+        
+        $arrayRules = $requestAll;
+
+        array_walk($arrayRules, function (&$value, $key) use ($rules) {
+            $value = $rules[$key];
+        });
+
         $request->validate($arrayRules);
 
         $company->update($request->all());
