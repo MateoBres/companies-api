@@ -273,7 +273,8 @@ class CompanyValidationTest extends TestCase
             ->assertStatus(422); // verifica risposta errore validazione   
             
         $this->patchJson(route('company.update', $this->company->id), [
-            'type' => 1
+            'type' => 2,
+            'taxCode' => '01234567890'
             ])
             ->assertJsonStructure(['data'])
             ->assertOk(); // verifica risposta ok   

@@ -19,8 +19,11 @@ class CompanyController extends Controller
             'businessName' => 'required|string',
             'vat' => 'required|string|digits:11',
             'type' => ['required', Rule::in([1, 2, 3, 4])],
-            'taxCode' => (!in_array($request->get('type'), [1, 2, 3, 4]) ? '' : ($request->get('type') == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11'))
+            'taxCode' => (isset($request['type'])? (!in_array($request['type'], [1, 2, 3, 4]) ? '' : ($request['type'] == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11')):'')
         ];
+        
+        //filtro le rules in base ai campi ricevuto nella request
+        $rules = array_intersect_key($rules, $request);
 
         return $rules;
     }
@@ -28,28 +31,43 @@ class CompanyController extends Controller
 
     public function index(Request $request)
     {
-        $query = Company::query();
-        $perPage = 15;
-        $page = $request->input('page', 1);
+        
+        // $query = Company::query();
+        // $perPage = 15;
+        // $page = $request->input('page', 1);
 
-        $result = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
+        // $result = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
 
-        //creo l'ogggetto pagination customizzato
-        $meta = new stdClass;
-        $meta->page = $page;
-        $meta->perPage = $perPage;
-        $meta->total = count(Company::all());
+        // //creo l'ogggetto pagination customizzato
+        // $meta = new stdClass;
+        // $meta->page = $page;
+        // $meta->perPage = $perPage;
+        // $meta->total = count(Company::all());
 
-        return response()->json([
-            'data' => $result,
-            'meta' => $meta
+        // return response()->json([
+        //     'data' => $result,
+        //     'meta' => $meta
+        // ], 200);
+        
+        // $pagination = [
+        //     'page' => $companies->currentPage(),
+        //     'per_page' => $companies->perPage(),            
+        //     'total' => $companies->total()
+        // ];
+        $companies = Company::paginate()->toArray();
+
+        // rimuovo i campi che non mi interessano del paginator
+        unset($companies['from'], $companies['first_page_url'], $companies['next_page_url'], $companies['path'], $companies['prev_page_url'], $companies['to'], $companies['links'], $companies['last_page_url'], $companies['last_page']);
+        
+         return response()->json([
+            'data' => $companies
         ], 200);
     }
 
 
     public function store(Request $request)
     {
-        $request->validate($this->getRules($request));
+        $request->validate($this->getRules($request->all()));
 
         $company = Company::create($request->all());
 
@@ -74,12 +92,10 @@ class CompanyController extends Controller
     public function update($id, Request $request)
     {
         $company = Company::findOrFail($id);
-
+        
         // filtro i campi che non sono stati modificati
-        $requestAll = array_filter($request->all(), function ($key) use ($request, $company) {
-            return $request->all()[$key] != $company[$key];
-        }, ARRAY_FILTER_USE_KEY);
-
+        $requestAll = array_diff_assoc($request->all(), $company->toArray());
+      
         // se tuttti i valori passati sono identici a quelli attuali lancio un errore
         if (count($requestAll) == 0) {
             return response()->json([
@@ -98,16 +114,7 @@ class CompanyController extends Controller
             $request->request->add(['taxCode' => $company->taxCode]);
         }
 
-        // creo un array con le regole di validazione che mi servono in base ai campi dell'update
-        $rules = $this->getRules($request);
-        
-        $arrayRules = $requestAll;
-
-        array_walk($arrayRules, function (&$value, $key) use ($rules) {
-            $value = $rules[$key];
-        });
-
-        $request->validate($arrayRules);
+        $request->validate($this->getRules($requestAll));
 
         $company->update($request->all());
 
