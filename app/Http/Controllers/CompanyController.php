@@ -29,38 +29,13 @@ class CompanyController extends Controller
     }
 
 
-    public function index(Request $request)
-    {
-        
-        // $query = Company::query();
-        // $perPage = 15;
-        // $page = $request->input('page', 1);
+    public function index()
+    {        
+        $company = Company::paginate()->toArray(); // paginate modificato in vendor/laravel/framework/src/Illuminate/Pagination/LengthAwarePaginator
 
-        // $result = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
-
-        // //creo l'ogggetto pagination customizzato
-        // $meta = new stdClass;
-        // $meta->page = $page;
-        // $meta->perPage = $perPage;
-        // $meta->total = count(Company::all());
-
-        // return response()->json([
-        //     'data' => $result,
-        //     'meta' => $meta
-        // ], 200);
-        
-        // $pagination = [
-        //     'page' => $companies->currentPage(),
-        //     'per_page' => $companies->perPage(),            
-        //     'total' => $companies->total()
-        // ];
-        $companies = Company::paginate()->toArray();
-
-        // rimuovo i campi che non mi interessano del paginator
-        unset($companies['from'], $companies['first_page_url'], $companies['next_page_url'], $companies['path'], $companies['prev_page_url'], $companies['to'], $companies['links'], $companies['last_page_url'], $companies['last_page']);
-        
-         return response()->json([
-            'data' => $companies
+        return response()->json([
+           'data' => $company['data'],
+           'meta' => $company['meta'] 
         ], 200);
     }
 
