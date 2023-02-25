@@ -19,12 +19,10 @@ class CompanyController extends Controller
             'businessName' => 'required|string',
             'vat' => 'required|string|digits:11',
             'type' => ['required', Rule::in([1, 2, 3, 4])],
-            'taxCode' => (isset($request['type'])? (!in_array($request['type'], [1, 2, 3, 4]) ? '' : ($request['type'] == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11')):'')
+            'taxCode' => 'required|string|legthForType:'.$request['type'].'|typeForType:'.$request['type']
+            // 'taxCode' => (isset($request['type'])? (!in_array($request['type'], [1, 2, 3, 4]) ? '' : ($request['type'] == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11')):'')
         ];
         
-        //filtro le rules in base ai campi ricevuto nella request
-        $rules = array_intersect_key($rules, $request);
-
         return $rules;
     }
 
@@ -69,7 +67,9 @@ class CompanyController extends Controller
         $company = Company::findOrFail($id);
         
         // filtro i campi che non sono stati modificati
-        $requestAll = array_diff_assoc($request->all(), $company->toArray());
+        $requestAll = array_filter($request->all(), function ($key) use ($request, $company) {
+            return $request->all()[$key] != $company[$key];
+        }, ARRAY_FILTER_USE_KEY);
       
         // se tuttti i valori passati sono identici a quelli attuali lancio un errore
         if (count($requestAll) == 0) {
@@ -89,7 +89,11 @@ class CompanyController extends Controller
             $request->request->add(['taxCode' => $company->taxCode]);
         }
 
-        $request->validate($this->getRules($requestAll));
+        $rules = $this->getRules($requestAll);
+        
+        //filtro le rules in base ai campi ricevuto nella request
+        $rules = array_intersect_key($rules, $requestAll);
+        $request->validate($rules);
 
         $company->update($request->all());
 
