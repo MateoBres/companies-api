@@ -48,20 +48,20 @@ class AppServiceProvider extends ServiceProvider
         }, 'Tax code must be 16 caracters log with type 4 selected and 11 for the others types.');
 
         Validator::extend('typeForType', function ($attribute, $value, $parameters, $validator) {
-            return true;
             // se non mi conosco il type evito la validazione del taxcode           
             if (!isset($parameters[0]) || !in_array($parameters[0], [1, 2, 3, 4])) {
                 return true;
             }
 
             if ($parameters[0] == 4) {
-                if (preg_match('/^([0-9][a-z][A-Z]*)$/', $value)) {
+                if (preg_match('/^[a-zA-Z0-9_.-]*$/', $value)) {
                     return true;
                 } else {
                     return false;
                 }
             }
             if (in_array($parameters[0], [1, 2, 3])) {
+
                 if (preg_match('/^([0-9]*)$/', $value)) {
                     return true;
                 } else {

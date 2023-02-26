@@ -12,6 +12,7 @@ class CompanyController extends Controller
 
     public function getRules($request)
     {
+        isset($request['type'])?$type=$request['type']:$type='';
         $rules = [
             'address' => 'string|nullable',
             'employees' => 'numeric|nullable',
@@ -19,8 +20,7 @@ class CompanyController extends Controller
             'businessName' => 'required|string',
             'vat' => 'required|string|digits:11',
             'type' => ['required', Rule::in([1, 2, 3, 4])],
-            'taxCode' => 'required|string|legthForType:'.$request['type'].'|typeForType:'.$request['type']
-            // 'taxCode' => (isset($request['type'])? (!in_array($request['type'], [1, 2, 3, 4]) ? '' : ($request['type'] == 4 ? 'required|string|alpha_num|size:16' : 'required|string|digits:11')):'')
+            'taxCode' => 'required|string|legthForType:'.$type.'|typeForType:'.$type
         ];
         
         return $rules;
