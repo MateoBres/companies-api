@@ -2,31 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use stdClass;
 use App\Models\Company;
+use App\Traits\RulesTrait;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
-
-    public function getRules($request)
-    {
-        isset($request['type'])?$type=$request['type']:$type='';
-        $rules = [
-            'address' => 'string|nullable',
-            'employees' => 'numeric|nullable',
-            'active' => 'boolean|nullable',
-            'businessName' => 'required|string',
-            'vat' => 'required|string|digits:11',
-            'type' => ['required', Rule::in([1, 2, 3, 4])],
-            'taxCode' => 'required|string|legthForType:'.$type.'|typeForType:'.$type
-        ];
-        
-        return $rules;
-    }
-
-
+    use RulesTrait;
+  
     public function index()
     {        
         $company = Company::paginate()->toArray(); // paginate modificato in vendor/laravel/framework/src/Illuminate/Pagination/LengthAwarePaginator
