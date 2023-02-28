@@ -56,7 +56,7 @@ class CompanyCrudTest extends TestCase
     public function test_salvataggio_nuova_company()
     {
         $company = Company::factory()->make();
-
+        
         $this->postJson(route('company.store'), [
             'businessName' => $company->businessName, 
             'vat' => $company->vat, 

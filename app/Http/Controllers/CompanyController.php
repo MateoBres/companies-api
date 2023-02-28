@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Traits\RulesTrait;
 use Illuminate\Http\Request;
+use App\Http\Resources\CompanyResource;
+use App\Http\Requests\StoreCompanyRequest;
 
 class CompanyController extends Controller
 {
@@ -21,15 +23,11 @@ class CompanyController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreCompanyRequest $request)
     {
-        $request->validate($this->getRules($request->all()));
+        $company = Company::create($request->validated());
 
-        $company = Company::create($request->all());
-
-        return response()->json([
-            'data' => $company
-        ], 201);
+        return new CompanyResource($company);
     }
 
 

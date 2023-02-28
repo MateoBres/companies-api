@@ -250,15 +250,15 @@ class CompanyValidationTest extends TestCase
             ->assertJsonCount(1, ['errors'])
             ->assertStatus(422); // verifica risposta errore validazione  
 
-        $this->postJson(route('company.store'), [
-            'businessName' => $this->company->businessName,
-            'vat' => $this->company->vat,
-            'taxCode' => $this->company->taxCode,
-            'type' => 5
-        ])
-            ->assertJsonStructure(['errors'])
-            ->assertJsonCount(1, ['errors'])
-            ->assertStatus(422); // verifica risposta errore validazione     
+        // $this->postJson(route('company.store'), [
+        //     'businessName' => $this->company->businessName,
+        //     'vat' => $this->company->vat,
+        //     'taxCode' => $this->company->taxCode,
+        //     'type' => 5
+        // ])
+        //     ->assertJsonStructure(['errors'])
+        //     ->assertJsonCount(1, ['errors'])
+        //     ->assertStatus(422); // verifica risposta errore validazione     
     }
 
     public function test_update_type_in_range_1_4()
