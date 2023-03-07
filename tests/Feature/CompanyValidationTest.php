@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Dto\CompanyPayload;
+use App\Enums\CompanyTypes;
+use App\Services\CompanyService;
 use App\Http\Controllers\CompanyController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -12,14 +15,12 @@ class CompanyValidationTest extends TestCase
 
     // preparazione dati per i test
     private $company;
-    private $rules;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->rules = new CompanyController();
-        $this->company =  $this->createCompany(['businessName' => 'my company', 'vat' => '12345678901', 'taxCode' => 'BRSMTT78S14B157O', 'type' => 4]);
+        $this->company = (new CompanyService())->createCompany(new CompanyPayload('my company', '12345678901', 'BRSMTT78S14B157O', null,  null, CompanyTypes::Freelance, null));
 
         $this->authUser();
     }

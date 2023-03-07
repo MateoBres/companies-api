@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('taxCode', 256);
             $table->integer('employees')->nullable();
             $table->boolean('active')->nullable()->default(false);
-            $table->enum('type', [1, 2, 3, 4]); //corrispondenza 1=>'SRL', 2=>'SPA', 3=>'SNC', 4=>'Freelance'
+            // $table->enum('type', [1, 2, 3, 4]); //corrispondenza 1=>'SRL', 2=>'SPA', 3=>'SNC', 4=>'Freelance'
+            $table->string('type'); //corrispondenza 1=>'SRL', 2=>'SPA', 3=>'SNC', 4=>'Freelance'
             $table->timestamps();
         });
     }

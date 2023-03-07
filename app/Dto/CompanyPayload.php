@@ -12,8 +12,8 @@ class CompanyPayload implements Arrayable
         public string $businessName,
         public string $vat,
         public string $taxCode,
-        public int $employees,
-        public bool $active,
+        public ?int $employees,
+        public ?bool $active,
         public CompanyTypes $type,
         public ?string $address,
     ) {

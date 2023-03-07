@@ -10,4 +10,8 @@ class Company extends Model
     use HasFactory;
 
     protected $fillable = ['businessName', 'address', 'vat', 'taxCode', 'employees', 'active', 'type'];
+
+    protected $cast = [
+        'type' => CommpanyTypes::class
+    ];
 }

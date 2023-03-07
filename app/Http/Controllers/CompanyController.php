@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Traits\RulesTrait;
+use App\Dto\CompanyPayload;
 use Illuminate\Http\Request;
+use App\Services\CompanyService;
 use App\Http\Resources\CompanyResource;
 use App\Http\Requests\StoreCompanyRequest;
 
@@ -12,6 +14,10 @@ class CompanyController extends Controller
 {
     use RulesTrait;
   
+    public function __construct( private CompanyService $companyService ) 
+    {
+    } 
+
     public function index()
     {        
         $company = Company::paginate()->toArray(); // paginate modificato in vendor/laravel/framework/src/Illuminate/Pagination/LengthAwarePaginator
@@ -25,7 +31,10 @@ class CompanyController extends Controller
 
     public function store(StoreCompanyRequest $request)
     {
-        $company = Company::create($request->validated());
+        // $company = Company::create($request->validated());
+        $company = $this->companyService->createCompany(
+            CompanyPayload::newInstanceFrom($request->validated())
+        );
 
         return new CompanyResource($company);
     }
