@@ -512,8 +512,8 @@ class ComposerStaticInit6fe796731ead0b5100157faa8452e978
     public static $classMap = array (
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Dto\\CompanyPayload' => __DIR__ . '/../..' . '/app/Dto/CompanyPayload.php',
+        'App\\Enums\\CompanyTypes' => __DIR__ . '/../..' . '/app/Enums/CompanyTypes.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
-        'App\\Helpers\\Constant' => __DIR__ . '/../..' . '/app/Helpers/Constant.php',
         'App\\Http\\Controllers\\Auth\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/AuthController.php',
         'App\\Http\\Controllers\\CompanyController' => __DIR__ . '/../..' . '/app/Http/Controllers/CompanyController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
@@ -528,7 +528,6 @@ class ComposerStaticInit6fe796731ead0b5100157faa8452e978
         'App\\Http\\Middleware\\ValidateSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/ValidateSignature.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Http\\Requests\\StoreCompanyRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StoreCompanyRequest.php',
-        'App\\Http\\Requests\\UpdateCompanyRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdateCompanyRequest.php',
         'App\\Http\\Resources\\CompanyResource' => __DIR__ . '/../..' . '/app/Http/Resources/CompanyResource.php',
         'App\\Models\\Company' => __DIR__ . '/../..' . '/app/Models/Company.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',

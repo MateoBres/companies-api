@@ -24,4 +24,21 @@ class CompanyService
         //    // DO SOMETHING ELSE
         //});
     }
+
+
+    public function updateCompany($company, $request): Company
+    {
+        
+
+        // Add relations (belongs to)
+
+        return tap($company, fn (Company $company) => $company->update($request->all()));
+        //return tap($company, function (Company $company) {
+        //    $company->save();
+        //
+        //    // Add relations (save one, save many, many to many...)
+        //    // DO SOMETHING ELSE
+        //});
+    }
 }
+?>

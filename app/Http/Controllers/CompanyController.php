@@ -85,7 +85,9 @@ class CompanyController extends Controller
         $rules = array_intersect_key($rules, $requestAll);
         $request->validate($rules);
 
-        $company->update($request->all());
+        $company = $this->companyService->updateCompany($company, $request);
+
+        // $company->update($request->all());
 
         return response()->json([
             'data' => $company
@@ -102,3 +104,4 @@ class CompanyController extends Controller
         return response()->noContent();
     }
 }
+?>
