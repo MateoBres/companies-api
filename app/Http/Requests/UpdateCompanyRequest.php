@@ -15,6 +15,9 @@ class UpdateCompanyRequest extends FormRequest
      */
     public function rules()
     {
+        // per prendere l'id
+        // Request::instance()->id
+
         // dd($this->get('taxCode'));
         $this->get('type')!=null?$type=$this->get('type'):$type='';
         $rules = [
