@@ -6,7 +6,7 @@ use App\Enums\CompanyTypes;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCompanyRequest extends FormRequest
+class UpdateCompanyRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
