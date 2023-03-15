@@ -8,7 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/company', [CompanyController::class, 'store'])->name('company.store');
     Route::get('/company/{id}', [CompanyController::class, 'show'])->name('company.show');
-    Route::patch('/company/{id}', [CompanyController::class, 'update'])->name('company.update');
+    Route::patch('/company/{company}', [CompanyController::class, 'update'])->name('company.update');
     Route::delete('/company/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
 });
 

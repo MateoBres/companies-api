@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
-use App\Traits\RulesTrait;
 use App\Dto\CompanyPayload;
 use Illuminate\Http\Request;
 use App\Services\CompanyService;
@@ -11,10 +10,8 @@ use App\Http\Resources\CompanyResource;
 use App\Http\Requests\StoreCompanyRequest;
 
 class CompanyController extends Controller
-{
-    use RulesTrait;
-  
-    public function __construct( private CompanyService $companyService ) 
+{  
+    public function __construct( private readonly CompanyService $companyService ) 
     {
     } 
 
@@ -52,40 +49,44 @@ class CompanyController extends Controller
     }
 
 
-    public function update($id, Request $request)
+    public function update(Company $company, Request $request)
     {
-        $company = Company::findOrFail($id);
+        // $company = Company::findOrFail($id);
         
-        // filtro i campi che non sono stati modificati
-        $requestAll = array_filter($request->all(), function ($key) use ($request, $company) {
-            return $request->all()[$key] != $company[$key];
-        }, ARRAY_FILTER_USE_KEY);
+        // // filtro i campi che non sono stati modificati
+        // $requestAll = array_filter($request->all(), function ($key) use ($request, $company) {
+        //     return $request->all()[$key] != $company[$key];
+        // }, ARRAY_FILTER_USE_KEY);
       
-        // se tuttti i valori passati sono identici a quelli attuali lancio un errore
-        if (count($requestAll) == 0) {
-            return response()->json([
-                'errors' => 'At least one field must be modified'
-            ], 200);
-        }
+        // // se tuttti i valori passati sono identici a quelli attuali lancio un errore
+        // if (count($requestAll) == 0) {
+        //     return response()->json([
+        //         'errors' => 'At least one field must be modified'
+        //     ], 200);
+        // }
 
         // se non viene aggiornato il type e viene aggiornato in taxCode gli passo il type preso a DB per la validazione e viceversa
-        if (isset($requestAll['taxCode']) && !isset($requestAll['type'])){
-            $requestAll['type'] = $company->type;
-            $request->request->add(['type' => $company->type]);
-        }
+        
+        // TODO questa parte viene esguita nel ValidateTaxcodeRule
+        // if (isset($request['taxCode']) && !isset($request['type'])){
+        //     $request['type'] = $company->type;
+        //     $request->request->add(['type' => $company->type]);
+        // }
 
-        if (isset($requestAll['type']) && !isset($requestAll['taxCode'])){
-            $requestAll['taxCode'] = $company->taxCode;
-            $request->request->add(['taxCode' => $company->taxCode]);
-        }
+        // if (isset($request['type']) && !isset($request['taxCode'])){
+        //     $request['taxCode'] = $company->taxCode;
+        //     $request->request->add(['taxCode' => $company->taxCode]);
+        // }
 
-        $rules = $this->getRules($requestAll);
+        // $rules = $this->getRules($request);
         
         //filtro le rules in base ai campi ricevuto nella request
-        $rules = array_intersect_key($rules, $requestAll);
-        $request->validate($rules);
+        // $rules = array_intersect_key($rules, $request);
+        // $request->validate($rules);
 
-        $company = $this->companyService->updateCompany($company, $request);
+        $company = $this->companyService->updateCompany(
+            $company, CompanyPayload::newInstanceFrom($request->validatedOrDefault($company))
+        );
 
         // $company->update($request->all());
 

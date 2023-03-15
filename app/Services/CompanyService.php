@@ -26,19 +26,16 @@ class CompanyService
     }
 
 
-    public function updateCompany($company, $request): Company
+    public function updateCompany($company, $companyPayload): Company
     {
-        
+        //il fill si occupa di salvare i dati che sono stati modificati mergiandoli con quelli che rimangono invariati
+        $company->fill(
+            $companyPayload->toArray()
+        );
 
         // Add relations (belongs to)
 
-        return tap($company, fn (Company $company) => $company->update($request->all()));
-        //return tap($company, function (Company $company) {
-        //    $company->save();
-        //
-        //    // Add relations (save one, save many, many to many...)
-        //    // DO SOMETHING ELSE
-        //});
+        return tap($company, fn (Company $company) => $company->save());      
     }
 }
 ?>
