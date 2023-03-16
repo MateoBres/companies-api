@@ -17,12 +17,6 @@ class CompanyService
         // Add relations (belongs to)
 
         return tap($company, fn (Company $company) => $company->save());
-        //return tap($company, function (Company $company) {
-        //    $company->save();
-        //
-        //    // Add relations (save one, save many, many to many...)
-        //    // DO SOMETHING ELSE
-        //});
     }
 
 

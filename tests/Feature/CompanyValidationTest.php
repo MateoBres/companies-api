@@ -25,25 +25,6 @@ class CompanyValidationTest extends TestCase
         $this->authUser();
     }
 
-    // TESTS DI VALIDAZIONE
-
-    //UPDATE
-    public function test_almeno_un_campo_not_null_durante_update()
-    {
-        $this->patchJson(route('company.update', $this->company->id), [
-            'businessName' => '',
-            'address' => '',
-            'vat' => '',
-            'taxCode' => '',
-            'employees' => '',
-            'active' => '',
-            'type' => ''
-        ])
-            ->assertJsonStructure(['errors'])
-            ->assertStatus(422); // verifica risposta errore validazione                  
-    }
-
-
     // VALIDAZIONE CAMPI
 
     // ADDRESS

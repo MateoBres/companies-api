@@ -19,11 +19,11 @@ class StoreCompanyRequest extends FormRequest
         $type = CompanyTypes::from($this->input('type'));
 
         return [
-            'address' => 'string|nullable',
-            'employees' => 'numeric|nullable',
-            'active' => 'boolean|nullable',
-            'businessName' => 'required|string',
-            'vat' => 'required|string|digits:11',
+            'address' => ['string', 'nullable'],
+            'employees' => ['numeric', 'nullable'],
+            'active' => ['boolean', 'nullable'],
+            'businessName' => ['required', 'string'],
+            'vat' => ['required', 'string', 'digits:11'],
             'type' => ['required', new Enum(CompanyTypes::class)],
             'taxCode' => ['required', 'string', $type === CompanyTypes::Freelance ? 'alphanum' : 'numeric', new ValidateTaxCode($type)]
         ];

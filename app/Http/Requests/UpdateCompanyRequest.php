@@ -20,22 +20,24 @@ class UpdateCompanyRequest extends FormRequest
         $type = CompanyTypes::from($this->input('type'));
 
         return [
-            'address' => 'string|fillable',
-            'employees' => 'numeric|fillable',
-            'active' => 'boolean|fillable',
-            'businessName' => 'required|fillable|string',
-            'vat' => 'required|string|fillable|digits:11',
-            'type' => ['required', 'fillable', new Enum(CompanyTypes::class)],
-            'taxCode' => ['required', 'fillable', 'string', $type === CompanyTypes::Freelance ? 'alphanum' : 'numeric', new ValidateTaxCode($type)]
+            'address' => ['filled', 'string'],
+            'employees' => ['filled', 'numeric'],
+            'active' => ['filled', 'boolean'],
+            'businessName' => ['filled', 'string'],
+            'vat' => ['filled', 'string', 'digits:11'],
+            'type' => ['filled', new Enum(CompanyTypes::class)],
+            'taxCode' => ['filled', 'string', $type === CompanyTypes::Freelance ? 'alphanum' : 'numeric', new ValidateTaxCode($type)]
         ];
     }
 
     public function validatedOrDefault(Company $company)
     {
-        $result = [];
         $fillable = $company->getFillable();
+
+        $result = [];
         foreach($fillable as $field)
         {
+            // i campi fillable posso on esserci quindi controllo se c'e' il campo altrimenti gli passo il campo della company da db
             $result[$field] = $this->validated($field, $company->{$field}); 
         }
 
