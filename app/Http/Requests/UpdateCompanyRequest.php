@@ -36,12 +36,8 @@ class UpdateCompanyRequest extends FormRequest
         $result = [];
         foreach($fillable as $field)
         {
-            // $result[$field] = $this->validated($field, $company->{$field});
             // se ho un campo non modificato gli assegno il valore che aveva
-            if ($this->validated($field, $company->{$field}) == null)
-                $result[$field] =  $company->first()->getAttributes()[$field];
-            else
-                $result[$field] = $this->validated($field, $company->{$field});
+            $result[$field] = $this->validated($field, $company->{$field})??$company->first()->getAttributes()[$field];
         }
 
         return $result;
