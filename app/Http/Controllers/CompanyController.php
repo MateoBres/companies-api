@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\CompanyService;
 use App\Http\Resources\CompanyResource;
 use App\Http\Requests\StoreCompanyRequest;
+use App\Http\Requests\UpdateCompanyRequest;
 
 class CompanyController extends Controller
 {  
@@ -35,27 +36,20 @@ class CompanyController extends Controller
 
         return new CompanyResource($company);
     }
-
-
-    public function show(Company $company)
+    
+    public function show($id, Request $request)
     {
+        $company = Company::findOrFail($id);
+
+        $company->update($request->all());
+
         return response()->json([
             'data' => $company
         ], 200);
     }
-    // public function show($id, Request $request)
-    // {
-    //     $company = Company::findOrFail($id);
-
-    //     $company->update($request->all());
-
-    //     return response()->json([
-    //         'data' => $company
-    //     ], 200);
-    // }
 
 
-    public function update(Company $company, Request $request)
+    public function update(Company $company, UpdateCompanyRequest $request)
     {
         $company = $this->companyService->updateCompany(
             // il primo parametro company e' l'oggeto che va modificato

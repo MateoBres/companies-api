@@ -33,12 +33,15 @@ class UpdateCompanyRequest extends FormRequest
     public function validatedOrDefault(Company $company)
     {
         $fillable = $company->getFillable();
-
         $result = [];
         foreach($fillable as $field)
         {
-            // i campi fillable posso on esserci quindi controllo se c'e' il campo altrimenti gli passo il campo della company da db
-            $result[$field] = $this->validated($field, $company->{$field}); 
+            // $result[$field] = $this->validated($field, $company->{$field});
+            // se ho un campo non modificato gli assegno il valore che aveva
+            if ($this->validated($field, $company->{$field}) == null)
+                $result[$field] =  $company->first()->getAttributes()[$field];
+            else
+                $result[$field] = $this->validated($field, $company->{$field});
         }
 
         return $result;
